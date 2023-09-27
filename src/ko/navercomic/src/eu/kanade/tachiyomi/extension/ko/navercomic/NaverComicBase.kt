@@ -110,19 +110,16 @@ abstract class NaverComicBase(protected val mType: String) : ParsedHttpSource() 
         val manga = json.decodeFromString<Manga>(response.body.string())
         val authors = manga.communityArtists.joinToString { it.name }
 
-        var publishingStatus = SManga.ONGOING
-        if (manga.finished) {
-            publishingStatus = SManga.COMPLETED
-        } else if (manga.rest) {
-            publishingStatus = SManga.ON_HIATUS
-        }
-
         return SManga.create().apply {
             title = manga.titleName
             author = authors
             description = manga.synopsis
             thumbnail_url = manga.thumbnailUrl
-            status = publishingStatus
+            status = when {
+                manga.finished -> SManga.COMPLETED
+                manga.rest -> SManga.ON_HIATUS
+                else -> SManga.ONGOING
+            }
         }
     }
 
