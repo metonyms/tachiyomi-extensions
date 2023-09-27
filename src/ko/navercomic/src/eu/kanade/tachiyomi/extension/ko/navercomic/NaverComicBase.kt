@@ -116,8 +116,8 @@ abstract class NaverComicBase(protected val mType: String) : ParsedHttpSource() 
             description = manga.synopsis
             thumbnail_url = manga.thumbnailUrl
             status = when {
-                manga.finished -> SManga.COMPLETED
                 manga.rest -> SManga.ON_HIATUS
+                manga.finished -> SManga.COMPLETED
                 else -> SManga.ONGOING
             }
         }
