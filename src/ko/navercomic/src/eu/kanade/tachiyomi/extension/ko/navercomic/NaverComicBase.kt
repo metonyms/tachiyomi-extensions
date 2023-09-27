@@ -108,9 +108,7 @@ abstract class NaverComicBase(protected val mType: String) : ParsedHttpSource() 
 
     override fun mangaDetailsParse(response: Response): SManga {
         val manga = json.decodeFromString<Manga>(response.body.string())
-        val authors = manga.communityArtists.run {
-            this.map { it.name }
-        }.joinToString()
+        val authors = manga.communityArtists.joinToString { it.name }
 
         return SManga.create().apply {
             title = manga.titleName
