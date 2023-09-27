@@ -110,12 +110,19 @@ abstract class NaverComicBase(protected val mType: String) : ParsedHttpSource() 
         val manga = json.decodeFromString<Manga>(response.body.string())
         val authors = manga.communityArtists.joinToString { it.name }
 
+        var publishingStatus = SManga.ONGOING
+        if (manga.finished) {
+            publishingStatus = SManga.COMPLETED
+        } else if (manga.rest) {
+            publishingStatus = SManga.ON_HIATUS
+        }
+
         return SManga.create().apply {
             title = manga.titleName
             author = authors
             description = manga.synopsis
             thumbnail_url = manga.thumbnailUrl
-            status = if (manga.finished) SManga.COMPLETED else SManga.ONGOING
+            status = publishingStatus
         }
     }
 
@@ -213,6 +220,7 @@ data class Manga(
     val titleName: String,
     val titleId: Int,
     val finished: Boolean,
+    val rest: Boolean,
     val communityArtists: List<Author>,
     val synopsis: String,
 )
